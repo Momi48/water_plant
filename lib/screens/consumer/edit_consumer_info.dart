@@ -38,20 +38,28 @@ class _EditConumserInfoState extends State<EditConumserInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF0A1A50),
+      //drawer: AppDrawer(),
+      appBar: AppBar(
+      
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () {
+          Navigator.pop(context); // Go back to previous screen
+        },
+      ),
+      title: Text(
+        'Edit Consumer Info',
+        style: TextStyle(color: Colors.white),
+      ),
+      centerTitle: true,
+    ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 30),
         child: Column(
           children: [
             // Header Title
-            Text(
-              "Edit Consumer ",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-              ),
-            ),
+            
 
             const SizedBox(height: 20),
 
@@ -192,6 +200,7 @@ class _EditConumserInfoState extends State<EditConumserInfo> {
                             price: int.tryParse(amountController.text) ?? 0,
                             bottles: int.tryParse(bottleController.text) ?? 0,
                             days: days,
+                            
                           );
 
                           await SqfliteServices().consumerInfo(

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:water_plant/helper/show_snackbar.dart';
+import 'package:water_plant/model/counter_sale_model.dart';
 import 'package:water_plant/model/labour_model.dart';
 import 'package:water_plant/model/user_model.dart';
 import 'package:water_plant/screens/auth/login_screen.dart';
 import 'package:water_plant/screens/home_screen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:water_plant/model/consumer_model.dart';
+
 class SqfliteServices {
   Database? db;
 
@@ -63,7 +65,8 @@ class SqfliteServices {
     price INTEGER,
     bottles INTEGER,
     total_amount INTEGER,
-    days TEXT
+    days TEXT,
+    status INTEGER DEFAULT 0
   )
 ''');
     await db.execute(
@@ -81,16 +84,26 @@ CREATE TABLE labours (
   mobile_2 TEXT,
   address TEXT,
   date_of_joining TEXT NOT NULL,
-
-  job_type TEXT NOT NULL CHECK(job_type IN ('salary', 'commission')),
   salary INTEGER,
-
+  commission TEXT,
+  status INTEGER DEFAULT 0,
+  job_type TEXT NOT NULL CHECK(job_type IN ('salary', 'commission')),
+  
   CHECK (
     (job_type = 'salary' AND salary IS NOT NULL)
     OR
     (job_type = 'commission' AND salary IS NULL)
   )
+  
 );
+''');
+    await db.execute('''
+  CREATE TABLE counter_sale (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    amount INTEGER NOT NULL,
+    date TEXT NOT NULL,
+    status INTEGER NOT NULL DEFAULT 0
+  )
 ''');
   }
 
@@ -235,10 +248,10 @@ CREATE TABLE labours (
       // 1️⃣ Insert without consumer_code
       int id = await db!.insert('consumers', consumerModel.toJson());
       print('Hey');
-      // 2️⃣ Generate code
+
       String consumerCode = 'C-$id';
       print('Hey 2');
-      // 3️⃣ Update row with consumer_code
+
       await db.update(
         'consumers',
         {'consumer_code': consumerCode},
@@ -251,8 +264,7 @@ CREATE TABLE labours (
       consumerModel.consumerCode = consumerCode;
 
       showSnackBar(
-        message:
-            "ConsumersData Added Successfully",
+        message: "ConsumersData Added Successfully",
         context: context,
       );
 
@@ -262,8 +274,44 @@ CREATE TABLE labours (
       rethrow;
     }
   }
- 
-Future<LabourModelData> labourInfo({
+
+  Future<void> updateConsumerStatus({
+    required int consumerId,
+    required int status,
+  }) async {
+    try {
+      final db = await getDatabase();
+
+      await db!.update(
+        'consumers',
+        {'status': status},
+        where: 'consumer_id = ?',
+        whereArgs: [consumerId],
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<ConsumerModel>> fetchConsumerData() async {
+    final db = await getDatabase();
+
+    final List<Map<String, dynamic>> result = await db!.query(
+      'consumers',
+      where: 'status = ?',
+      whereArgs: [0],
+      orderBy: 'consumer_id DESC',
+    );
+
+    // Convert to model
+    final consumerList = result.map((row) {
+      return ConsumerModel.fromJson(row);
+    }).toList();
+
+    return consumerList;
+  }
+
+  Future<LabourModelData> labourInfo({
     required LabourModelData labourModel,
     required BuildContext context,
   }) async {
@@ -272,27 +320,22 @@ Future<LabourModelData> labourInfo({
 
       // 1️⃣ Insert without consumer_code
       int id = await db!.insert('labours', labourModel.toJson());
-      
+
       // 2️⃣ Generate code
-      String labourCode = 'L-$id';
-      
-      // 3️⃣ Update row with consumer_code
+      String labourCode = 'L-00$id';
+      print("Labour code $labourCode");
       await db.update(
-        'consumers',
-        {'consumer_code': labourCode},
-        where: 'consumer_id = ?',
+        'labours',
+        {'labour_code': labourCode},
+        where: 'labour_id = ?',
         whereArgs: [id],
       );
       print('Hey 3');
-      // 4️⃣ Update model
+
       labourModel.labourId = id;
       labourModel.labourCode = labourCode;
-
-      showSnackBar(
-        message:
-            "Labour Data Added Successfully",
-        context: context,
-      );
+      print('Labour Data ${labourModel.toJson()}');
+      showSnackBar(message: "Labour Data Added Successfully", context: context);
 
       return labourModel;
     } catch (e) {
@@ -301,39 +344,119 @@ Future<LabourModelData> labourInfo({
     }
   }
 
+  Future<void> updateLabourStatus({
+    required int labourId,
+    required int status,
+  }) async {
+    try {
+      final db = await getDatabase();
 
-  Future<List<ConsumerModel>> fetchConsumerData() async {
-    final db = await getDatabase();
-
-    List<Map<String, dynamic>> consumerData = await db!.rawQuery(
-      'SELECT * FROM consumers',
-    );
-    print(consumerData[0]);
-
-    final consumerList = consumerData.map((row) {
-      print('Row ${row['days']}');
-      return ConsumerModel.fromJson(row);
-    }).toList();
-
-    print('Hey 2');
-
-    return consumerList;
+      await db!.update(
+        'labours',
+        {'status': status},
+        where: 'labour_id = ?',
+        whereArgs: [labourId],
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
-  Future<List<LabourModelData>> fetchLabourInfo() async {
-    final db = await getDatabase();
 
-    List<Map<String, dynamic>> labourData = await db!.rawQuery(
-      'SELECT * FROM consumers',
-    );
-    print(labourData[0]);
+  Future<List<LabourModelData>> fetchLabourInfo(BuildContext context) async {
+    try {
+      final db = await getDatabase();
 
-    final labourList = labourData.map((row) {
-      print('Row ${row['days']}');
-      return LabourModelData.fromJson(row);
-    }).toList();
+      final List<Map<String, dynamic>> labourData = await db!.query(
+        'labours',
+        where: 'status = ?',
+        whereArgs: [0],
+        orderBy: 'labour_id DESC',
+      );
 
-    print('Hey 2');
+      final labourList = labourData.map((row) {
+        return LabourModelData.fromJson(row);
+      }).toList();
 
-    return labourList;
+      return labourList;
+    } catch (e) {
+      showSnackBar(message: e.toString(), context: context);
+      return [];
+    }
+  }
+
+  void counterSaleInfo({
+    required CounterSaleModel counterSaleModel,
+    required BuildContext context,
+  }) async {
+    try {
+      final db = await getDatabase();
+      print("hey");
+      int id = await db!.insert(
+        'counter_sale',
+        counterSaleModel.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+
+      counterSaleModel.id = id;
+
+      showSnackBar(message: "Counter Sale Data Added", context: context);
+    } catch (e) {
+      showSnackBar(message: e.toString(), context: context);
+    }
+  }
+
+  Future<List<CounterSaleModel>> fetchCounterSale({
+    required BuildContext context,
+  }) async {
+    try {
+      final db = await getDatabase();
+
+      final result = await db!.query(
+        'counter_sale',
+        where: 'status = ?',
+        whereArgs: [0], //  ONLY ACTIVE RECORDS
+        orderBy: 'id DESC',
+      );
+
+      return result.map((e) => CounterSaleModel.fromJson(e)).toList();
+    } catch (e) {
+      print('Error ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<void> updateCounterSale(
+    BuildContext context,
+    CounterSaleModel counterSale,
+  ) async {
+    try {
+      final db = await getDatabase();
+
+      await db!.update(
+        'counter_sale',
+        {'amount': counterSale.amount, 'date': counterSale.date},
+        where: 'id = ?',
+        whereArgs: [counterSale.id],
+      );
+      showSnackBar(message: "Data Edited Successfully", context: context);
+    } catch (e) {}
+  }
+
+  Future<void> softDeleteCounterSale(BuildContext context, int id) async {
+    try {
+      final db = await getDatabase();
+
+      final data = await db!.update(
+        'counter_sale',
+        {'status': 1},
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+
+      print('object data $data');
+      showSnackBar(message: "Date Deleted", context: context);
+    } catch (e) {
+      showSnackBar(message: e.toString(), context: context);
+    }
   }
 }

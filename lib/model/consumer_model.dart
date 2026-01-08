@@ -10,7 +10,7 @@ class ConsumerModel {
   int? bottles;
   int? totalAmount;
   List<String>? days;
-
+  int? status;
   ConsumerModel({
     this.consumerId,
     this.consumerCode,
@@ -22,6 +22,7 @@ class ConsumerModel {
     this.price,
     this.bottles,
     this.days,
+    this.status = 0,
   }) : totalAmount = (advance ?? 0) * (price ?? 0) * (bottles ?? 0);
 
   ConsumerModel.fromJson(Map<String, dynamic> json) {
@@ -36,6 +37,7 @@ class ConsumerModel {
     bottles = json['bottles'];
     totalAmount = json['total_amount'];
     days = json['days'] != null ? (json['days'] as String).split(',') : [];
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
@@ -51,6 +53,7 @@ class ConsumerModel {
       'bottles': bottles,
       'total_amount': totalAmount,
       'days': days?.join(','),
+      'status': status
     };
   }
 }

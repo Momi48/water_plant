@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:water_plant/helper/global_varaibles.dart';
 
 class RichTextLabel extends StatelessWidget {
   final String title;

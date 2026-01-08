@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:water_plant/helper/global_varaibles.dart';
 import 'package:water_plant/model/consumer_model.dart';
-import 'package:water_plant/screens/consumer_info.dart';
-import 'package:water_plant/screens/edit_consumer_info.dart';
+import 'package:water_plant/screens/consumer/consumer_info.dart';
+import 'package:water_plant/screens/consumer/edit_consumer_info.dart';
 import 'package:water_plant/services/sqflite_services.dart';
 import 'package:water_plant/widgets/rich_text.dart';
+import 'package:water_plant/widgets/show_delete_dialog_box.dart';
 
 class ConsumerList extends StatefulWidget {
   const ConsumerList({super.key});
@@ -48,7 +49,8 @@ class _ConsumerListState extends State<ConsumerList> {
 
   @override
   Widget build(BuildContext context) {
-    return  Stack(
+    return Scaffold(
+      body: Stack(
         children: [
           //background
           Positioned(
@@ -137,7 +139,7 @@ class _ConsumerListState extends State<ConsumerList> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ConsumerInfo(),
+                                    builder: (context) => EditConumserInfo(),
                                   ),
                                 );
                               },
@@ -227,9 +229,39 @@ class _ConsumerListState extends State<ConsumerList> {
                                                     ),
                                                   );
                                                 },
-                                                child: Icon(Icons.edit_square, size: 17)),
+                                                child: Icon(
+                                                  Icons.edit_square,
+                                                  size: 17,
+                                                ),
+                                              ),
                                               SizedBox(width: 9),
-                                              Icon(Icons.delete, size: 17),
+                                              InkWell(
+                                                onTap: () {
+                                                  showDeleteDialog(
+                                                    context,
+                                                    () {
+                                                      SqfliteServices()
+                                                      .updateConsumerStatus(
+                                                        consumerId: consumerData
+                                                            .consumerId!,
+                                                        status: 1,
+                                                      );
+                                                  setState(() {
+                                                    filteredConsumers.removeAt(
+                                                      index,
+                                                    );
+                                                  });
+                                                    },
+                                                  );
+                                                  print(
+                                                    'Consumer id and stauts ${consumerData.consumerId}  ${consumerData.status}',
+                                                  );
+                                                },
+                                                child: Icon(
+                                                  Icons.delete,
+                                                  size: 17,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                           SizedBox(height: 15),
@@ -240,6 +272,7 @@ class _ConsumerListState extends State<ConsumerList> {
                                                   title: "Consumer Id",
                                                   value: consumerData.consumerId
                                                       .toString(),
+                                                  titleColor: titleColor,
                                                   textAlign: TextAlign
                                                       .left, // left-aligned
                                                 ),
@@ -254,6 +287,7 @@ class _ConsumerListState extends State<ConsumerList> {
                                                     title: "Phone",
                                                     value: consumerData.phone1
                                                         .toString(),
+                                                    titleColor: titleColor,
                                                     textAlign: TextAlign
                                                         .left, // also left-aligned
                                                   ),
@@ -263,8 +297,9 @@ class _ConsumerListState extends State<ConsumerList> {
                                               Expanded(
                                                 child: RichTextLabel(
                                                   title: "Last Date",
-                                                  value: "12/9/2025",
-
+                                                  value:
+                                                      "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
+                                                  titleColor: titleColor,
                                                   textAlign: TextAlign
                                                       .center, // left-aligned too
                                                 ),
@@ -281,6 +316,7 @@ class _ConsumerListState extends State<ConsumerList> {
                                                 title: "Price",
                                                 value:
                                                     "Rs. ${consumerData.price}",
+                                                titleColor: titleColor,
                                               ),
 
                                               Expanded(
@@ -291,6 +327,7 @@ class _ConsumerListState extends State<ConsumerList> {
                                                     value: consumerData
                                                         .consumerId
                                                         .toString(),
+                                                    titleColor: titleColor,
                                                     textAlign: TextAlign.left,
                                                   ),
                                                 ),
@@ -304,6 +341,7 @@ class _ConsumerListState extends State<ConsumerList> {
                                                     title: "Total Amount",
                                                     value: consumerData.price!
                                                         .toString(),
+                                                    titleColor: titleColor,
                                                   ),
                                                 ],
                                               ),
@@ -319,12 +357,14 @@ class _ConsumerListState extends State<ConsumerList> {
                                                 title: "Total Amount",
                                                 value:
                                                     "Rs. ${consumerData.consumerId}",
+                                                titleColor: titleColor,
                                               ),
                                               SizedBox(width: 20),
                                               RichTextLabel(
                                                 title: "Received Bottles",
                                                 value: consumerData.bottles
                                                     .toString(),
+                                                titleColor: titleColor,
                                               ),
 
                                               Spacer(),
@@ -377,8 +417,8 @@ class _ConsumerListState extends State<ConsumerList> {
             ),
           ),
         ],
-      );
-    
+      ),
+    );
   }
 
   @override

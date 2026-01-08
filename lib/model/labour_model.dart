@@ -9,7 +9,8 @@ class LabourModelData {
   String? dateOfJoining;
   String? jobType;
   int? salary;
-
+  int? status;
+  String? commission;
   LabourModelData({
     this.labourId,
     this.labourCode,
@@ -21,6 +22,8 @@ class LabourModelData {
     required this.dateOfJoining,
     this.jobType,
     this.salary,
+    this.commission,
+    this.status = 0,
   });
 
   LabourModelData.fromJson(Map<String, dynamic> json) {
@@ -34,6 +37,8 @@ class LabourModelData {
     dateOfJoining = json['date_of_joining'];
     jobType = json['job_type'];
     salary = json['salary'];
+    commission = json['commission'];
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
@@ -48,6 +53,8 @@ class LabourModelData {
     data['date_of_joining'] = dateOfJoining;
     data['job_type'] = jobType;
     data['salary'] = salary;
+    data['commission'] = commission;
+    data['status'] = status;
     return data;
   }
 }

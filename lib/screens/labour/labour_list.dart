@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:water_plant/helper/global_varaibles.dart';
 import 'package:water_plant/model/labour_model.dart';
-import 'package:water_plant/screens/consumer_info.dart';
-import 'package:water_plant/screens/edit_labour_info.dart';
-import 'package:water_plant/screens/labour_info.dart';
+import 'package:water_plant/screens/labour/edit_labour_info.dart';
 import 'package:water_plant/services/sqflite_services.dart';
 import 'package:water_plant/widgets/rich_text.dart';
+import 'package:water_plant/widgets/show_delete_dialog_box.dart';
 
 class LabourList extends StatefulWidget {
   const LabourList({super.key});
@@ -27,7 +26,7 @@ class _LabourListState extends State<LabourList> {
   }
 
   void fetchData() async {
-    final labours = await SqfliteServices().fetchLabourInfo();
+    final labours = await SqfliteServices().fetchLabourInfo(context);
     setState(() {
       allLabours = labours;
       filteredLabours = labours;
@@ -140,7 +139,7 @@ class _LabourListState extends State<LabourList> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => LabourInfo(),
+                                    builder: (context) => EditLabourInfo(),
                                   ),
                                 );
                               },
@@ -164,7 +163,7 @@ class _LabourListState extends State<LabourList> {
                       ),
                       SizedBox(height: 16),
                       FutureBuilder<List<LabourModelData>>(
-                        future: SqfliteServices().fetchLabourInfo(),
+                        future: SqfliteServices().fetchLabourInfo(context),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -203,11 +202,12 @@ class _LabourListState extends State<LabourList> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          // --- First Row: Consumer Id, Phone, Last Date
+                                          // --- First Row: labour Id, Phone, Last Date
                                           Row(
                                             children: [
                                               Text(
-                                                'CU-31005',
+                                                labourData.labourCode!
+                                                    .toString(),
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -234,7 +234,32 @@ class _LabourListState extends State<LabourList> {
                                                 ),
                                               ),
                                               SizedBox(width: 9),
-                                              Icon(Icons.delete, size: 17),
+                                              InkWell(
+                                                onTap: () {
+                                                  showDeleteDialog(
+                                                    context,
+                                                    () {
+                                                      SqfliteServices()
+                                                          .updateLabourStatus(
+                                                            labourId: labourData
+                                                                .labourId!,
+                                                            status: 1,
+                                                          );
+                                                      setState(() {
+                                                    filteredLabours.removeAt(
+                                                      index,
+                                                    );
+                                                  });
+                                                    },
+                                                    "Please confirm if this labour\nneeds to be deleted",
+                                                  );
+
+                                                },
+                                                child: Icon(
+                                                  Icons.delete,
+                                                  size: 17,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                           SizedBox(height: 15),
@@ -243,8 +268,9 @@ class _LabourListState extends State<LabourList> {
                                               Expanded(
                                                 child: RichTextLabel(
                                                   title: "Labour Id",
-                                                  value: labourData.labourCode
+                                                  value: labourData.labourId
                                                       .toString(),
+                                                  titleColor: titleColor,
                                                   textAlign: TextAlign
                                                       .left, // left-aligned
                                                 ),
@@ -259,6 +285,7 @@ class _LabourListState extends State<LabourList> {
                                                     title: "Phone",
                                                     value: labourData.mobile1
                                                         .toString(),
+                                                    titleColor: titleColor,
                                                     textAlign: TextAlign
                                                         .left, // also left-aligned
                                                   ),
@@ -270,7 +297,7 @@ class _LabourListState extends State<LabourList> {
                                                   title: "Date of Joining",
                                                   value:
                                                       labourData.dateOfJoining!,
-
+                                                  titleColor: titleColor,
                                                   textAlign: TextAlign
                                                       .center, // left-aligned too
                                                 ),
@@ -285,8 +312,10 @@ class _LabourListState extends State<LabourList> {
                                             children: [
                                               RichTextLabel(
                                                 title: "Loan Amount",
-                                                value:
-                                                    "Rs. ${labourData.salary}",
+                                                value: labourData.salary == null
+                                                    ? "Rs 0"
+                                                    : "Rs. ${labourData.salary}",
+                                                titleColor: titleColor,
                                               ),
 
                                               Expanded(
@@ -296,6 +325,7 @@ class _LabourListState extends State<LabourList> {
                                                     title: "Monthly Delivery",
                                                     value: "2",
                                                     textAlign: TextAlign.left,
+                                                    titleColor: titleColor,
                                                   ),
                                                 ),
                                               ),
@@ -307,6 +337,7 @@ class _LabourListState extends State<LabourList> {
                                                   RichTextLabel(
                                                     title: "Daily Delivery",
                                                     value: "2".toString(),
+                                                    titleColor: titleColor,
                                                   ),
                                                 ],
                                               ),
@@ -322,10 +353,12 @@ class _LabourListState extends State<LabourList> {
                                                 title: labourData.salary == null
                                                     ? "Total Commision"
                                                     : "Monthly Salary",
-                                                value:
-                                                    "Rs. ${labourData.salary}",
+                                                value: labourData.salary != null
+                                                    ? "Rs. ${labourData.salary}"
+                                                    : "Rs. ${labourData.commission}",
+                                                titleColor: titleColor,
                                               ),
-                                              SizedBox(width: 20),
+                                              SizedBox(width: 15),
                                               SizedBox(
                                                 width: 78,
                                                 height: 30,
@@ -358,7 +391,7 @@ class _LabourListState extends State<LabourList> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(width: 10),
+                                              SizedBox(width: 4),
                                               SizedBox(
                                                 width: 78,
                                                 height: 30,
@@ -382,7 +415,17 @@ class _LabourListState extends State<LabourList> {
                                                     child:
                                                         labourData.salary ==
                                                             null
-                                                        ? Text('Pay Commision')
+                                                        ? Text(
+                                                            "Pay \nCommission",
+                                                            style: TextStyle(
+                                                              fontSize: 10,
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          )
                                                         : Text(
                                                             "Pay Salary",
                                                             style: TextStyle(

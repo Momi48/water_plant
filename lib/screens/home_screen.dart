@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:water_plant/helper/global_varaibles.dart';
-import 'package:water_plant/screens/consumer_list.dart';
+import 'package:water_plant/screens/consumer/consumer_list.dart';
 import 'package:water_plant/screens/bottle_delivery.dart';
-import 'package:water_plant/screens/consumer_info.dart';
+import 'package:water_plant/screens/consumer/consumer_info.dart';
 import 'package:water_plant/screens/counter_sale.dart';
-import 'package:water_plant/screens/labour_list.dart';
+import 'package:water_plant/screens/labour/labour_info.dart';
+import 'package:water_plant/screens/labour/labour_list.dart';
 import 'package:water_plant/screens/settings.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     BottleDelivery(),
     ConsumerList(),
     LabourList(),
+    LabourInfo(),
     Settings(),
   ];
 
@@ -32,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     "Bottle Delivery",
     "Consumer",
     "Labour",
-    "Appointment",
+    "Create Labour",
     "Setting"
     
   ];
@@ -48,10 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: currentIndex == 3 || currentIndex == 2
+      appBar:  currentIndex == 2
           ? null
           : AppBar(
-              title: const Text('Personal Information'),
+              title: currentIndex == 0 ? const Text('Personal Information') : null,
               backgroundColor: backgroundColorPlant,
               iconTheme: const IconThemeData(
                 color: Colors.white,

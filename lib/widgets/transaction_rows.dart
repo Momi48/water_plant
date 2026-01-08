@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TransactionRows extends StatelessWidget {
-  final String amount;
+  final int amount;
   final String date;
   final Color? amountColor;
   final VoidCallback? onEdit;
@@ -26,7 +26,7 @@ class TransactionRows extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Text(
-              amount,
+              amount.toString(),
               style: TextStyle(
                 color: amountColor ?? Colors.black,
                 fontWeight: FontWeight.bold,

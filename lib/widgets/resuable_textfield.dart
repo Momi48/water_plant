@@ -5,12 +5,12 @@ class ReusableTextField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType inputType;
   final bool isPassword;
- final Widget? hint;
+  final Widget? hint;
   final String? Function(String?)? validator;
   final Widget? suffixIcon;
   final Color innerShadowColor;
   final double innerShadowHeight;
-
+  final bool? readonly;
   const ReusableTextField({
     super.key,
     required this.label,
@@ -21,7 +21,8 @@ class ReusableTextField extends StatelessWidget {
     this.validator,
     this.innerShadowColor = const Color(0xFF2E7D32),
     this.innerShadowHeight = 4.0,
-     this.hint,
+    this.hint,
+    this.readonly = false
   });
 
   @override
@@ -81,6 +82,7 @@ class ReusableTextField extends StatelessWidget {
                     padding: const EdgeInsets.all(1.0), // Creates border effect
                     child: TextFormField(
                       validator: validator,
+                      readOnly: readonly!,
                       controller: controller,
                       keyboardType: inputType,
                       obscureText: isPassword,

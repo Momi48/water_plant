@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:water_plant/helper/global_varaibles.dart';
 import 'package:water_plant/model/user_model.dart';
 import 'package:water_plant/screens/auth/login_screen.dart';
-import 'package:water_plant/screens/auth/pin_code_screen.dart';
 
 import 'package:water_plant/screens/home_screen.dart';
 import 'package:water_plant/services/sqflite_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
- // await SqfliteServices().delete();
+  //await SqfliteServices().delete();
   runApp(MyApp());
 }
 

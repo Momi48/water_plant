@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:water_plant/helper/global_varaibles.dart';
+import 'package:water_plant/model/counter_sale_model.dart';
+import 'package:water_plant/services/sqflite_services.dart';
 import 'package:water_plant/widgets/edit_counter_sale_dialog.dart';
 import 'package:water_plant/widgets/transaction_rows.dart';
 
@@ -12,35 +14,53 @@ class CounterSale extends StatefulWidget {
 
 class _CounterSaleState extends State<CounterSale> {
   final searchController = TextEditingController();
+  final dateController = TextEditingController();
+  void refreshCounterSale() {
+    setState(() {
+      filteredTransactions = SqfliteServices().fetchCounterSale(
+        context: context,
+      );
+    });
+  }
 
-  final transactions = [
-    {"amount": "Rs. 20,000", "date": "25/9/2025"},
-    {"amount": "Rs. 10,000", "date": "26/9/2025"},
-  ];
-
-  List<Map<String, String>> filteredTransactions = [];
+  late Future<List<CounterSaleModel>> filteredTransactions;
 
   @override
   void initState() {
     super.initState();
-    filteredTransactions = transactions.cast<Map<String, String>>();
-    searchController.addListener(_filterTransactions);
+    filteredTransactions = SqfliteServices().fetchCounterSale(context: context);
+  }
+ Future<void> pickDate(
+  BuildContext context,
+  TextEditingController controller,
+) async {
+  final DateTime now = DateTime.now();
+
+  DateTime initialDate = now;
+
+  if (controller.text.isNotEmpty) {
+    try {
+      final parts = controller.text.split('-');
+      initialDate = DateTime(
+        int.parse(parts[0]),
+        int.parse(parts[1]),
+        int.parse(parts[2]),
+      );
+    } catch (_) {}
   }
 
-  void _filterTransactions() {
-    final query = searchController.text.toLowerCase();
-    setState(() {
-      filteredTransactions = transactions
-          .where(
-            (tx) =>
-                tx["amount"]!.toLowerCase().contains(query) ||
-                tx["date"]!.toLowerCase().contains(query),
-          )
-          .cast<Map<String, String>>()
-          .toList();
-    });
-  }
+  final DateTime? pickedDate = await showDatePicker(
+    context: context,
+    initialDate: initialDate,
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2100),
+  );
 
+  if (pickedDate != null) {
+    controller.text =
+        "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -122,7 +142,11 @@ class _CounterSaleState extends State<CounterSale> {
                           width: 90, // fixed width
                           child: ElevatedButton(
                             onPressed: () {
-                              print('Add New pressed');
+                              showEditCounterSaleDialog(
+                                context,
+                                refreshCounterSale,
+                                 
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
@@ -202,21 +226,41 @@ class _CounterSaleState extends State<CounterSale> {
                           ),
 
                           // LIST OF TRANSACTIONS
-                          ListView.builder(
-                            itemCount: filteredTransactions.length,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              final item = filteredTransactions[index];
-                              return TransactionRows(
-                                amount: item["amount"]!,
-                                date: item["date"]!,
-                                onEdit: () {
-                                  print("Edit ${item["amount"]}");
-                                  showEditCounterSaleDialog(context);
-                                },
-                                onDelete: () {
-                                  print("Delete ${item["amount"]}");
+                          FutureBuilder(
+                            future: filteredTransactions,
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData || snapshot.data == null) {
+                                return CircularProgressIndicator.adaptive();
+                              }
+                              return ListView.builder(
+                                itemCount: snapshot.data!.length,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  final item = snapshot.data![index];
+                                  return TransactionRows(
+                                    amount: item.amount!,
+                                    date: item.date!,
+                                    onEdit: () async {
+                                      showEditCounterSaleDialog(context, () {
+                                        refreshCounterSale();
+                                        
+                                      }, 
+                                      
+                                      item);
+                                    },
+                                    onDelete: () async {
+                                      await SqfliteServices()
+                                          .softDeleteCounterSale(
+                                            context,
+                                            snapshot.data![index].id!,
+                                          );
+                                      print(
+                                        'Data Deleted and status ${snapshot.data![index].status}',
+                                      );
+                                      refreshCounterSale();
+                                    },
+                                  );
                                 },
                               );
                             },

@@ -122,7 +122,7 @@ class _PinCodeScreenState extends State<PinCodeScreen> {
 
                                 GestureDetector(
                                   onTap: () {
-                                    showDeleteDialog(context);
+                                    showDeleteDialog(context,(){});
                                   },
                                   child: Text(
                                     "Sign With Email And Password?",

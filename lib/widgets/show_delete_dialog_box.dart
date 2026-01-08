@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
-void showDeleteDialog(BuildContext context) {
+void showDeleteDialog(
+  BuildContext context,
+  VoidCallback onPressed, [
+  String? text,
+]) {
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (context) {
       return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Stack(
           children: [
             //  Close Button (TRUE top-right)
@@ -17,10 +19,7 @@ void showDeleteDialog(BuildContext context) {
               right: 8,
               child: GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: const Icon(
-                  Icons.close,
-                  size: 22,
-                ),
+                child: const Icon(Icons.close, size: 22),
               ),
             ),
 
@@ -32,21 +31,19 @@ void showDeleteDialog(BuildContext context) {
                 children: [
                   const SizedBox(height: 10),
 
-                  const Text(
-                    "Please confirm if this consumer\nneeds to be deleted.",
+                  Text(
+                    text ??
+                        "Please confirm if this consumer\nneeds to be deleted.",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
 
                   const SizedBox(height: 25),
 
                   ElevatedButton(
                     onPressed: () {
-                      // delete logic here
                       Navigator.pop(context);
+                      onPressed();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
@@ -60,10 +57,7 @@ void showDeleteDialog(BuildContext context) {
                     ),
                     child: const Text(
                       "Delete",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ],
