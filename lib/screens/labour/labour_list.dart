@@ -219,14 +219,33 @@ class _LabourListState extends State<LabourList> {
                                               ),
                                               SizedBox(width: 10),
                                               InkWell(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          EditLabourInfo(),
-                                                    ),
-                                                  );
+                                                onTap: () async {
+                                                  final result =
+                                                      await Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              EditLabourInfo(
+                                                                labour:
+                                                                    labourData,
+                                                              ),
+                                                        ),
+                                                      );
+                                                  print('Result is $result');
+                                                  if (result == true) {
+                                                    final consumer =
+                                                       await SqfliteServices()
+                                                            .fetchLabourInfo(
+                                                              context,
+                                                            );
+                                                    setState(() {
+                                                      filteredLabours =
+                                                          consumer;
+                                                      print(
+                                                        'Result 2 is $result',
+                                                      );
+                                                    });
+                                                  }
                                                 },
                                                 child: Icon(
                                                   Icons.edit_square,
@@ -246,14 +265,12 @@ class _LabourListState extends State<LabourList> {
                                                             status: 1,
                                                           );
                                                       setState(() {
-                                                    filteredLabours.removeAt(
-                                                      index,
-                                                    );
-                                                  });
+                                                        filteredLabours
+                                                            .removeAt(index);
+                                                      });
                                                     },
                                                     "Please confirm if this labour\nneeds to be deleted",
                                                   );
-
                                                 },
                                                 child: Icon(
                                                   Icons.delete,
@@ -416,7 +433,7 @@ class _LabourListState extends State<LabourList> {
                                                         labourData.salary ==
                                                             null
                                                         ? Text(
-                                                            "Pay \nCommission",
+                                                            "Pay Commission",
                                                             style: TextStyle(
                                                               fontSize: 10,
                                                               color:

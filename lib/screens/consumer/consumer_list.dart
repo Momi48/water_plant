@@ -220,14 +220,28 @@ class _ConsumerListState extends State<ConsumerList> {
                                               ),
                                               SizedBox(width: 10),
                                               InkWell(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          EditConumserInfo(),
-                                                    ),
-                                                  );
+                                                onTap: () async {
+                                                  final result =
+                                                      await Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              EditConumserInfo(
+                                                                consumer:
+                                                                    consumerData,
+                                                              ),
+                                                        ),
+                                                      );
+                                                  if (result == true) {
+                                                    final consumer =
+                                                        await SqfliteServices()
+                                                            .fetchConsumerData();
+                                                    setState(() {
+                                                      filteredConsumers =
+                                                          consumer;
+                                                     
+                                                    });
+                                                  }
                                                 },
                                                 child: Icon(
                                                   Icons.edit_square,
@@ -237,22 +251,19 @@ class _ConsumerListState extends State<ConsumerList> {
                                               SizedBox(width: 9),
                                               InkWell(
                                                 onTap: () {
-                                                  showDeleteDialog(
-                                                    context,
-                                                    () {
-                                                      SqfliteServices()
-                                                      .updateConsumerStatus(
-                                                        consumerId: consumerData
-                                                            .consumerId!,
-                                                        status: 1,
-                                                      );
-                                                  setState(() {
-                                                    filteredConsumers.removeAt(
-                                                      index,
-                                                    );
+                                                  showDeleteDialog(context, () {
+                                                    SqfliteServices()
+                                                        .updateConsumerStatus(
+                                                          consumerId:
+                                                              consumerData
+                                                                  .consumerId!,
+                                                          status: 1,
+                                                        );
+                                                    setState(() {
+                                                      filteredConsumers
+                                                          .removeAt(index);
+                                                    });
                                                   });
-                                                    },
-                                                  );
                                                   print(
                                                     'Consumer id and stauts ${consumerData.consumerId}  ${consumerData.status}',
                                                   );
@@ -298,7 +309,7 @@ class _ConsumerListState extends State<ConsumerList> {
                                                 child: RichTextLabel(
                                                   title: "Last Date",
                                                   value:
-                                                      "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
+                                                      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
                                                   titleColor: titleColor,
                                                   textAlign: TextAlign
                                                       .center, // left-aligned too

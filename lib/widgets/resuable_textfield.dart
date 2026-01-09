@@ -11,6 +11,7 @@ class ReusableTextField extends StatelessWidget {
   final Color innerShadowColor;
   final double innerShadowHeight;
   final bool? readonly;
+  final VoidCallback? onTap;
   const ReusableTextField({
     super.key,
     required this.label,
@@ -22,7 +23,8 @@ class ReusableTextField extends StatelessWidget {
     this.innerShadowColor = const Color(0xFF2E7D32),
     this.innerShadowHeight = 4.0,
     this.hint,
-    this.readonly = false
+    this.readonly = false,
+    this.onTap,
   });
 
   @override
@@ -82,6 +84,7 @@ class ReusableTextField extends StatelessWidget {
                     padding: const EdgeInsets.all(1.0), // Creates border effect
                     child: TextFormField(
                       validator: validator,
+                      onTap: onTap,
                       readOnly: readonly!,
                       controller: controller,
                       keyboardType: inputType,

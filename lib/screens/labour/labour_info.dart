@@ -140,13 +140,30 @@ class _LabourInfoState extends State<LabourInfo> {
                     const SizedBox(height: 15),
                     ReusableTextField(
                       label: "Date of Joining",
-                      hint: Text("Enter DOT"),
+                      hint: const Text("Select Date"),
                       controller: dateOfJoiningController,
-                      inputType: TextInputType.datetime,
+                      inputType: TextInputType.none, // disable keyboard
+                      readonly: true, // IMPORTANT
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                        );
+
+                        if (pickedDate != null) {
+                          dateOfJoiningController.text =
+                              "${pickedDate.day.toString().padLeft(2, '0')}/"
+                              "${pickedDate.month.toString().padLeft(2, '0')}/"
+                              "${pickedDate.year}";
+                        }
+                      },
                       validator: (value) => value == null || value.isEmpty
                           ? "Enter joining date"
                           : null,
                     ),
+
                     ReusableDropdown(
                       label: "Job Type",
                       value: selectedJobType,

@@ -4,6 +4,7 @@ import 'package:water_plant/model/user_model.dart';
 import 'package:water_plant/screens/auth/login_screen.dart';
 
 import 'package:water_plant/screens/home_screen.dart';
+
 import 'package:water_plant/services/sqflite_services.dart';
 
 void main() async {
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+    
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: AppBarTheme(

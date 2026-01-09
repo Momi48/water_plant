@@ -293,6 +293,48 @@ CREATE TABLE labours (
     }
   }
 
+Future<void> editConsumerData({
+  required int consumerId,
+  required String name,
+  required String phone1,
+  String? phone2,
+  required String address,
+  int? advance,
+  required int price,
+  int? bottles,
+  required List<String> days,
+  
+  BuildContext? context,
+}) async {
+  try {
+    final db = await getDatabase();
+
+    await db!.update(
+      'consumers', // your table name
+      {
+        'name': name,
+        'phone_1': phone1,
+        'phone_2': phone2,
+        'address': address,
+        'advance': advance ?? 0,
+        'price': price,
+        'bottles': bottles ?? 0,
+        'days': days.join(','), // store as comma-separated string
+        'status': 0,
+      },
+      where: 'consumer_id = ?',
+      whereArgs: [consumerId],
+    );
+
+    if (context != null) {
+      showSnackBar(message: "Consumer Updated Successfully", context: context);
+    }
+  } catch (e) {
+    rethrow;
+  }
+}
+
+
   Future<List<ConsumerModel>> fetchConsumerData() async {
     final db = await getDatabase();
 
@@ -362,6 +404,45 @@ CREATE TABLE labours (
     }
   }
 
+  Future<void> editLabourData({
+    required int labourId,
+    required String name,
+    required String cnic,
+    required String mobile1,
+    String? mobile2,
+    required String address,
+    required String dateOfJoining,
+    String? jobType,
+    int? salary,
+    int? commission,
+    BuildContext? context
+  }) async {
+    try {
+      final db = await getDatabase();
+
+      await db!.update(
+        'labours',
+        {
+          'name': name,
+          'cnic': cnic,
+          'mobile_1': mobile1,
+          'mobile_2': mobile2,
+          'address': address,
+          'date_of_joining': dateOfJoining,
+          'job_type': jobType,
+          'status':0,
+          'salary': salary,
+          'commission': commission,
+        },
+        where: 'labour_id = ?',
+        whereArgs: [labourId],
+      );
+      showSnackBar(message: "Labour Updated Successfully", context: context!);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<LabourModelData>> fetchLabourInfo(BuildContext context) async {
     try {
       final db = await getDatabase();
@@ -370,7 +451,7 @@ CREATE TABLE labours (
         'labours',
         where: 'status = ?',
         whereArgs: [0],
-        orderBy: 'labour_id DESC',
+        orderBy: 'date_of_joining ASC',
       );
 
       final labourList = labourData.map((row) {
@@ -415,7 +496,7 @@ CREATE TABLE labours (
         'counter_sale',
         where: 'status = ?',
         whereArgs: [0], //  ONLY ACTIVE RECORDS
-        orderBy: 'id DESC',
+        orderBy: 'date_of_joining ASC',
       );
 
       return result.map((e) => CounterSaleModel.fromJson(e)).toList();

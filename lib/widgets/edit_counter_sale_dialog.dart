@@ -93,11 +93,44 @@ void showEditCounterSaleDialog(
 
                             if (pickedDate != null) {
                               dateController.text =
-                                  "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                                 "${pickedDate.day.toString().padLeft(2, '0')}/"
+                              "${pickedDate.month.toString().padLeft(2, '0')}/"
+                              "${pickedDate.year}";
                             }
                           
                         },
-                        child: const Icon(Icons.calendar_today),
+                        child: InkWell(
+                          onTap: ()async{
+                             final DateTime now = DateTime.now();
+
+                            DateTime initialDate = now;
+
+                            if (dateController.text.isNotEmpty) {
+                              try {
+                                final parts = dateController.text.split('-');
+                                initialDate = DateTime(
+                                  int.parse(parts[0]),
+                                  int.parse(parts[1]),
+                                  int.parse(parts[2]),
+                                );
+                              } catch (_) {}
+                            }
+
+                            final DateTime? pickedDate = await  showDatePicker(
+                              context: context,
+                              initialDate: initialDate,
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+
+                            if (pickedDate != null) {
+                              dateController.text =
+                                 "${pickedDate.day.toString().padLeft(2, '0')}/"
+                              "${pickedDate.month.toString().padLeft(2, '0')}/"
+                              "${pickedDate.year}";
+                            }
+                          },
+                          child: const Icon(Icons.calendar_today)),
                       ),
                     ),
 

@@ -6,7 +6,9 @@ import 'package:water_plant/widgets/custom_button.dart';
 import 'package:water_plant/widgets/resuable_textfield.dart';
 
 class EditConumserInfo extends StatefulWidget {
-  const EditConumserInfo({super.key});
+  final ConsumerModel? consumer;
+
+  const EditConumserInfo({super.key, this.consumer});
 
   @override
   State<EditConumserInfo> createState() => _EditConumserInfoState();
@@ -29,10 +31,20 @@ class _EditConumserInfoState extends State<EditConumserInfo> {
   List<String> days = [];
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+void initState() {
+  super.initState();
+  if (widget.consumer != null) {
+    final c = widget.consumer!;
+    customerController.text = c.name ?? '';
+    phone1Controller.text = c.phone1 ?? '';
+    phone2Controller.text = c.phone2 ?? '';
+    addressController.text = c.address ?? '';
+    advanceController.text = c.advance?.toString() ?? '';
+    amountController.text = c.price?.toString() ?? '';
+    bottleController.text = c.bottles?.toString() ?? '';
+    days = c.days ?? [];
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -186,32 +198,30 @@ class _EditConumserInfoState extends State<EditConumserInfo> {
 
                     // Create Button (Blue)
                     CustomButton(
-                      text: "Save Changes",
-                      onPressed: () async {
-                        await SqfliteServices().checkExistTable();
-                        if (_formKey.currentState!.validate()) {
-                          // Create ConsumerModel here
-                          consumerModel = ConsumerModel(
-                            name: customerController.text,
-                            phone1: phone1Controller.text,
-                            phone2: phone2Controller.text,
-                            address: addressController.text,
-                            advance: int.tryParse(advanceController.text) ?? 0,
-                            price: int.tryParse(amountController.text) ?? 0,
-                            bottles: int.tryParse(bottleController.text) ?? 0,
-                            days: days,
-                            
-                          );
+  text: "Save Changes",
+  onPressed: () async {
+    if (!_formKey.currentState!.validate()) return;
 
-                          await SqfliteServices().consumerInfo(
-                            consumerModel: consumerModel!,
-                            context: context,
-                          );
+    if (widget.consumer != null) {
+      // UPDATE existing consumer
+      await SqfliteServices().editConsumerData(
+        consumerId: widget.consumer!.consumerId!,
+        name: customerController.text,
+        phone1: phone1Controller.text,
+        phone2: phone2Controller.text,
+        address: addressController.text,
+        advance: int.tryParse(advanceController.text) ?? 0,
+        price: int.tryParse(amountController.text) ?? 0,
+        bottles: int.tryParse(bottleController.text) ?? 0,
+        days: days,
+        context: context,
+      );
 
-                          print('Consumer Info ${consumerModel!.toJson()}');
-                        }
-                      },
-                    ),
+      Navigator.of(context).pop(true);
+    }
+  },
+),
+
                   ],
                 ),
               ),
