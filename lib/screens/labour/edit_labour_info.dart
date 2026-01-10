@@ -226,19 +226,6 @@ class _EditLabourInfoState extends State<EditLabourInfo> {
                   ],
 
                   // Commission field
-                  if (selectedJobType == "commission") ...[
-                    const SizedBox(height: 15),
-                    ReusableTextField(
-                      label: "Commission %",
-                      hint: const Text("Enter Commission"),
-                      controller: commissionController,
-                      inputType: TextInputType.number,
-                      validator: (value) => value == null || value.isEmpty
-                          ? "Enter Commission"
-                          : null,
-                    ),
-                  ],
-
                   const SizedBox(height: 20),
 
                   CustomButton(
@@ -258,11 +245,11 @@ class _EditLabourInfoState extends State<EditLabourInfo> {
                           dateOfJoining: dateOfJoiningController.text,
                           jobType: selectedJobType,
                           salary: selectedJobType == "salary"
-                              ? int.tryParse(salaryController.text)
-                              : null,
-                          commission: selectedJobType == "commission"
-                              ? int.parse(commissionController.text)
-                              : null,
+                                ? int.tryParse(salaryController.text)
+                                : null,
+                            commission: selectedJobType == "commission"
+                                ? "0"
+                                : null,
                           context: context,
                         );
                       } else {
@@ -278,16 +265,20 @@ class _EditLabourInfoState extends State<EditLabourInfo> {
                             jobType: selectedJobType,
                             salary: selectedJobType == "salary"
                                 ? int.tryParse(salaryController.text)
-                                : null,
+                                : 0,
                             commission: selectedJobType == "commission"
-                                ? commissionController.text
-                                : null,
+                                ? "0"
+                                : "0",
                           ),
                           context: context,
                         );
+                        print("Salary input: ${salaryController.text}");
+                        print(
+                          "Commission string: ${selectedJobType == "commission" ? "0" : "0"}",
+                        );
+                        print("Selected job type: $selectedJobType");
                       }
                       Navigator.of(context).pop(true);
-                      
                     },
                   ),
                 ],

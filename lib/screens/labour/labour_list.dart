@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:water_plant/helper/global_varaibles.dart';
 import 'package:water_plant/model/labour_model.dart';
 import 'package:water_plant/screens/labour/edit_labour_info.dart';
+import 'package:water_plant/screens/labour/labour_info.dart';
 import 'package:water_plant/services/sqflite_services.dart';
 import 'package:water_plant/widgets/rich_text.dart';
 import 'package:water_plant/widgets/show_delete_dialog_box.dart';
@@ -139,7 +140,7 @@ class _LabourListState extends State<LabourList> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditLabourInfo(),
+                                    builder: (context) => LabourInfo(),
                                   ),
                                 );
                               },
@@ -284,8 +285,8 @@ class _LabourListState extends State<LabourList> {
                                             children: [
                                               Expanded(
                                                 child: RichTextLabel(
-                                                  title: "Labour Id",
-                                                  value: labourData.labourId
+                                                  title: "Labour Name",
+                                                  value: labourData.name
                                                       .toString(),
                                                   titleColor: titleColor,
                                                   textAlign: TextAlign

@@ -4,6 +4,7 @@ import 'package:water_plant/screens/consumer/consumer_list.dart';
 import 'package:water_plant/screens/bottle_delivery.dart';
 import 'package:water_plant/screens/consumer/consumer_info.dart';
 import 'package:water_plant/screens/counter_sale.dart';
+import 'package:water_plant/screens/dashboard.dart';
 import 'package:water_plant/screens/labour/labour_info.dart';
 import 'package:water_plant/screens/labour/labour_list.dart';
 import 'package:water_plant/screens/settings.dart';
@@ -19,73 +20,64 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
 
   List<Widget> pages = [
-    ConsumerInfo(),
-    CounterSale(),
+    Dashboard(),
     BottleDelivery(),
+    CounterSale(),
     ConsumerList(),
     LabourList(),
-    LabourInfo(),
     Settings(),
   ];
 
   final List<String> _drawerLabels = [
     "Dashboard",
-    "Counter Sale",
     "Bottle Delivery",
+    "Counter Sale",
     "Consumer",
     "Labour",
-    "Create Labour",
-    "Setting"
-    
+    "Setting",
   ];
 
   void onDrawerTap(int index) {
     if (index < pages.length) {
       setState(() => currentIndex = index);
-    } else {
-    }
+    } else {}
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  currentIndex == 2
-          ? null
-          : AppBar(
-              title: currentIndex == 0 ? const Text('Personal Information') : null,
+      appBar:  AppBar(
+              title: currentIndex == 0
+                  ? const Text('Personal Information')
+                  : null,
               backgroundColor: backgroundColorPlant,
-              iconTheme: const IconThemeData(
-                color: Colors.white,
-                size: 28,
-              ),
+              iconTheme: const IconThemeData(color: Colors.white, size: 28),
               centerTitle: true,
             ),
       drawer: Drawer(
-        
         child: Container(
           color: backgroundColorPlant,
           child: Column(
             children: [
               Padding(
-                padding:  EdgeInsets.only(
-                    top: 50.0, left: 16.0, right: 16.0, bottom: 20.0),
+                padding: EdgeInsets.only(
+                  top: 50.0,
+                  left: 16.0,
+                  right: 16.0,
+                  bottom: 20.0,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     CircleAvatar(
-
+                    CircleAvatar(
                       radius: 25,
                       backgroundColor: Colors.white,
 
-                      child: Icon(
-                        Icons.person,
-                        size: 30,
-                        color: Colors.black,
-                      ),
+                      child: Icon(Icons.person, size: 30, color: Colors.black),
                     ),
-                     SizedBox(width: 15),
-                     Column(
+                    SizedBox(width: 15),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
@@ -98,10 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         Text(
                           "user@gmail.com",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                       ],
                     ),
@@ -125,61 +114,56 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-               Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Divider(
-                  color: Colors.white54,
-                  thickness: 1,
-                ),
+                child: Divider(color: Colors.white54, thickness: 1),
               ),
-            Expanded(
-  child: Padding(
-    padding:  EdgeInsets.only(left: 50),
-    child: ListView.builder(
-     
-      itemCount: _drawerLabels.length,
-      itemBuilder: (context, index) {
-        final bool isSelected =
-            index < pages.length && currentIndex == index;
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 50),
+                  child: ListView.builder(
+                    itemCount: _drawerLabels.length,
+                    itemBuilder: (context, index) {
+                      final bool isSelected =
+                          index < pages.length && currentIndex == index;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: GestureDetector(
-            onTap: () {
-              if (index < pages.length) {
-                onDrawerTap(index);
-              } else {
-                Navigator.of(context).pop();
-              }
-            },
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                _drawerLabels[index],
-                style: TextStyle(
-                  color: isSelected ? Colors.yellow : Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: GestureDetector(
+                          onTap: () {
+                            if (index < pages.length) {
+                              onDrawerTap(index);
+                            } else {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              _drawerLabels[index],
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Colors.yellow
+                                    : Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-          ),
-        );
-      },
-    ),
-  ),
-),
-   Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Divider(
-                  color: Colors.white54,
-                  thickness: 1,
-                ),
+                child: Divider(color: Colors.white54, thickness: 1),
               ),
               Container(
                 width: double.infinity,
                 alignment: Alignment.center,
-                padding:  EdgeInsets.symmetric(vertical: 20.0),
+                padding: EdgeInsets.symmetric(vertical: 20.0),
                 child: GestureDetector(
                   onTap: () {
                     print("Logout Tapped");
@@ -197,11 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_forward,
-                        color: Colors.red,
-                        size: 24,
-                      ),
+                      Icon(Icons.arrow_forward, color: Colors.red, size: 24),
                     ],
                   ),
                 ),
@@ -210,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-     
+
       body: pages[currentIndex],
     );
   }

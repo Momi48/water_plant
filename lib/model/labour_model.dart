@@ -22,7 +22,7 @@ class LabourModelData {
     required this.dateOfJoining,
     this.jobType,
     this.salary,
-    this.commission,
+    this.commission = "0",
     this.status = 0,
   });
 

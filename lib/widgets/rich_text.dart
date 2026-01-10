@@ -29,7 +29,9 @@ class RichTextLabel extends StatelessWidget {
       children: [
         Text(
           title,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
+            
             color: titleColor ?? Colors.white,
             fontSize: 11,
             fontWeight: FontWeight.bold,

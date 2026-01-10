@@ -135,11 +135,12 @@ class _ConsumerListState extends State<ConsumerList> {
                             width: 90, // fixed width
                             child: ElevatedButton(
                               onPressed: () {
+                                 // assuming index 2 = ConsumerInfo page
                                 print('Add New pressed');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditConumserInfo(),
+                                    builder: (context) => ConsumerInfo(),
                                   ),
                                 );
                               },
@@ -239,7 +240,6 @@ class _ConsumerListState extends State<ConsumerList> {
                                                     setState(() {
                                                       filteredConsumers =
                                                           consumer;
-                                                     
                                                     });
                                                   }
                                                 },
@@ -280,8 +280,8 @@ class _ConsumerListState extends State<ConsumerList> {
                                             children: [
                                               Expanded(
                                                 child: RichTextLabel(
-                                                  title: "Consumer Id",
-                                                  value: consumerData.consumerId
+                                                  title: "Consumer Name",
+                                                  value: consumerData.name
                                                       .toString(),
                                                   titleColor: titleColor,
                                                   textAlign: TextAlign

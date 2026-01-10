@@ -414,7 +414,7 @@ Future<void> editConsumerData({
     required String dateOfJoining,
     String? jobType,
     int? salary,
-    int? commission,
+    String? commission,
     BuildContext? context
   }) async {
     try {
@@ -432,7 +432,8 @@ Future<void> editConsumerData({
           'job_type': jobType,
           'status':0,
           'salary': salary,
-          'commission': commission,
+          'commission':"0"
+          
         },
         where: 'labour_id = ?',
         whereArgs: [labourId],
@@ -496,7 +497,7 @@ Future<void> editConsumerData({
         'counter_sale',
         where: 'status = ?',
         whereArgs: [0], //  ONLY ACTIVE RECORDS
-        orderBy: 'date_of_joining ASC',
+        orderBy: 'date ASC',
       );
 
       return result.map((e) => CounterSaleModel.fromJson(e)).toList();

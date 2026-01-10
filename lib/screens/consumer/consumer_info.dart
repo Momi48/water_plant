@@ -38,6 +38,15 @@ class _ConsumerInfoState extends State<ConsumerInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF0A1A50),
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back,color: Colors.white,),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 30),
         child: Column(
